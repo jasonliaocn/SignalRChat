@@ -1,0 +1,98 @@
+﻿@using Microsoft.AspNet.Identity;
+@model IEnumerable<SignalRChat.Models.ChatSessionViewModel>
+
+<div class="col-xs-3">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs tabs-left" id="tabNav">
+        @{
+            var i = 0;
+            var tabText = "";
+            var tabContent = "";
+            foreach (var item in Model)
+            {
+                if (i == 0)
+                {
+                    tabText = "<li class=\"active\" id=\"ltab" + item.SessionId + "\">";
+                    //chat tabcontent starts for the active chatwindow
+                    tabContent = "<div class=\"tab-pane active\" style=\"border: 1px solid #eee\" id=\"tab" + item.SessionId + "\">";
+                }
+                else
+                {
+                    tabText += "<li id=\"ltab" + item.SessionId + "\">";
+                    //chat tabcontent starts for the inactive chatwindow
+                    tabContent += "<div class=\"tab-pane\" style=\"border: 1px solid #eee\" id=\"tab" + item.SessionId + "\">";
+                }
+                //chat Attendees window starts
+                if (item.Joinner.Count() > 2)
+                {
+                    tabText += "<a href=\"#tab" + item.SessionId + "\" data-toggle=\"tab\">" + "Conversion(" + item.Joinner.Count() + " Participants)</a></li>";
+                    tabContent += "<div  class=\"col-xs-12\"><h3>PARTICIPANTS</h3></div>";
+                    tabContent += "<div  class=\"col-xs-12\" style=\"height: 90px; border: 1px solid #eee; overflow: auto;\"><h4>Attendees(" + item.Joinner.Count() + ")</h4>";
+                    foreach (var user in item.Joinner)
+                    {
+                        tabContent += "<p><span class=\"glyphicon glyphicon-user\" aria-hidden=\"true\"></span> " + user.UserDisplayName + "</p>"
+                            + "<input id=\"hdId" + item.SessionId + "_" + user.UserId + "\" type=\"hidden\" value=\"" + user.UserId + "\" />";
+                    }
+                    tabContent += "</div>";
+                }
+                else
+                {
+                    //attendees info
+                    var user = item.Joinner.FirstOrDefault(u => u.UserId.ToString() != this.User.Identity.GetUserId());
+                    {
+                        //tabText += "<span>" + user.UserDisplayName + "</span>";
+                        tabText += "<a href=\"#tab" + item.SessionId + "\" data-toggle=\"tab\">" + user.UserDisplayName + "</a></li>";
+                        tabContent += "<div  class=\"col-xs-12\"><h3>" + user.UserDisplayName + "</h3>"
+                            +"<input id=\"hdId" + item.SessionId + "_" + user.UserId + "\" type=\"hidden\" value=\"" + user.UserId + "\" />" + "</div>";
+
+                    }
+                    //chat input window
+                    //tabContent += "<div class=\"container\"  style=\"height: 200px; border: 1px solid #eee\">";
+                    //tabContent += "<div  class=\"col-xs-10\">"
+                }
+                //chat Attendees window ends
+
+                //chat message content window starts
+                tabContent += "<div class=\"container\"  style=\"height: 500px; border: 1px solid #eee; overflow: auto;\">";
+                //history chat content
+                if (item.ChatContents.Count > 0)
+                {
+                    var senderId = -1;
+                    foreach (var content in item.ChatContents)
+                    {
+                        if (content.SendBy != senderId)
+                        {
+                            senderId = content.SendBy;
+                            //tabContent += "<div class=\"col-xs-1\"><span class=\"glyphicon glyphicon-user\" aria-hidden=\"true\"></span></div>";
+                            var sendby = item.Joinner.FirstOrDefault(s => s.UserId == content.SendBy);
+                            if (content.SendBy.ToString() == this.User.Identity.GetUserId())
+                            {
+                                tabContent += "<div><p class=\"text-muted\"><span class=\"glyphicon glyphicon-user\" aria-hidden=\"true\"></span> " + sendby.UserDisplayName + "</p></div>";
+                            }
+                            else
+                            {
+                                tabContent += "<div><p class=\"text-primary\"><span class=\"glyphicon glyphicon-user\" aria-hidden=\"true\"></span> " + sendby.UserDisplayName + "</p></div>";
+                            }
+                        }
+                        tabContent += "<div><p>" + content.MessageContent + "</p></div>";
+                    }
+                }
+                //chat message content window ends
+                tabContent += "</div>";
+                //chat tabcontent ends
+                tabContent += "</div>";
+                i++;
+            }
+            @Html.Raw(tabText)
+            ViewBag.ChatTabContent = tabContent;
+        }
+    </ul>
+</div>
+<div class="col-xs-9">
+    <!-- Tab panes -->
+    <div class="tab-content" id="tabcontent">
+        @Html.Raw(ViewBag.ChatTabContent)
+    </div>
+</div>
+
+<div class="clearfix"></div>

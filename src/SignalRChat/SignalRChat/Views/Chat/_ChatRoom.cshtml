@@ -1,0 +1,12 @@
+﻿@model IEnumerable<SignalRChat.Models.ChatContentViewModel>
+<div id="divChat" class="chatRoom">
+    <div class="topic">On Topic Of: [<span>@Html.DisplayFor(model => model.Topic)</span>]</div>
+    <div class="chatMain">
+        <div class="chatWindow" id="divchatWindow"></div>
+        <div class="chatUsers" id="divchatUsers"></div>
+    </div>
+    <div class="messageBar">
+        <input class="textbox" type="text" id="txtMessage" />
+        <input class="submitButton" type="button" id="btnSend" />
+    </div>
+</div>

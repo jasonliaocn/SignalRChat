@@ -1,0 +1,66 @@
+﻿@using Microsoft.AspNet.Identity;
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My Web Chat Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("WebChat Application", "Index", "Home", null, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-right nav navbar-nav">
+                @if (Request.IsAuthenticated)
+                {
+                    <strong style="color:whitesmoke">@this.User.Identity.GetUserName()</strong>
+                    <input id="hdId" type="hidden" value=@this.User.Identity.GetUserId() />
+                    @Html.ActionLink("Log Out", "Logout", "Account")
+                }
+                else
+                {
+                    @Html.ActionLink("Log In", "Login", "Account")
+                    <span>|</span>
+                    @Html.ActionLink("Register", "Register", "Account")
+                }
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    @if (Request.IsAuthenticated)
+                    {
+                    <li>@Html.ActionLink("Chat", "Index", "Chat")</li>
+                    }
+                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+    </div>
+
+    <div id="footer">
+        <div class="container">
+            <hr />
+            <footer>
+                <p>&copy; @DateTime.Now.Year - My Web Chat Application</p>
+            </footer>
+        </div>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
